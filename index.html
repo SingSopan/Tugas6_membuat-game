@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pac-Man Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #000;
+        }
+
+        #game-board {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            background-color: #111;
+            border: 2px solid #fff;
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: repeat(10, 1fr);
+        }
+
+        .cell {
+            width: 40px;
+            height: 40px;
+            box-sizing: border-box;
+        }
+
+        .food {
+            background-color: #ff0;
+            border-radius: 50%;
+        }
+
+        .pacman {
+            background-color: #ff0;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            position: absolute;
+            transition: transform 0.1s linear;
+        }
+
+        .wall {
+            background-color: #444;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-board"></div>
+
+    <script>
+        const boardSize = 10;
+        const cellSize = 40;
+        const gameBoard = document.getElementById("game-board");
+
+        // Create the grid and initialize walls and food
+        const grid = [];
+        for (let row = 0; row < boardSize; row++) {
+            const rowArray = [];
+            for (let col = 0; col < boardSize; col++) {
+                const cell = document.createElement("div");
+                cell.classList.add("cell");
+
+                // Add walls and food randomly
+                if (Math.random() < 0.1) {
+                    cell.classList.add("wall");
+                } else if (Math.random() < 0.3) {
+                    cell.classList.add("food");
+                }
+
+                gameBoard.appendChild(cell);
+                rowArray.push(cell);
+            }
+            grid.push(rowArray);
+        }
+
+        // Create Pac-Man
+        const pacman = document.createElement("div");
+        pacman.classList.add("pacman");
+        gameBoard.appendChild(pacman);
+
+        let pacmanRow = 0;
+        let pacmanCol = 0;
+        updatePacmanPosition();
+
+        // Listen for keyboard events
+        document.addEventListener("keydown", (event) => {
+            let nextRow = pacmanRow;
+            let nextCol = pacmanCol;
+
+            if (event.key === "ArrowUp") nextRow--;
+            else if (event.key === "ArrowDown") nextRow++;
+            else if (event.key === "ArrowLeft") nextCol--;
+            else if (event.key === "ArrowRight") nextCol++;
+
+            // Check boundaries and walls
+            if (
+                nextRow >= 0 &&
+                nextRow < boardSize &&
+                nextCol >= 0 &&
+                nextCol < boardSize &&
+                !grid[nextRow][nextCol].classList.contains("wall")
+            ) {
+                pacmanRow = nextRow;
+                pacmanCol = nextCol;
+
+                // Eat food
+                if (grid[pacmanRow][pacmanCol].classList.contains("food")) {
+                    grid[pacmanRow][pacmanCol].classList.remove("food");
+                }
+
+                updatePacmanPosition();
+            }
+        });
+
+        // Update Pac-Man position
+        function updatePacmanPosition() {
+            pacman.style.transform = `translate(${pacmanCol * cellSize}px, ${pacmanRow * cellSize}px)`;
+        }
+    </script>
+</body>
+</html>
